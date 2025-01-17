@@ -15,7 +15,7 @@ final class ProfanityCheckValidator extends ConstraintValidator
     /**
      * @var ProfanityChecker
      */
-    private $profanityCheck;
+    private ProfanityChecker $profanityCheck;
 
     /**
      * ProfanityCheckValidator constructor.

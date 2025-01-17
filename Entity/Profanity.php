@@ -30,14 +30,14 @@ class Profanity
      * @ORM\Column(name="word", type="string", nullable=false, unique=true, length=191)
      * @Assert\NotBlank()
      */
-    private $word;
+    private string $word;
 
     /**
      * Get id
      *
      * @return integer 
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -48,7 +48,7 @@ class Profanity
      * @param string $word
      * @return Profanity
      */
-    public function setWord($word)
+    public function setWord(string $word): self
     {
         $this->word = $word;
 
@@ -60,7 +60,7 @@ class Profanity
      *
      * @return string 
      */
-    public function getWord()
+    public function getWord(): string
     {
         return $this->word;
     }

@@ -9,5 +9,5 @@ use Symfony\Component\Validator\Constraint;
  */
 final class ProfanityCheck extends Constraint
 {
-    public $message = 'The string contains an illegal word: {{ string }}.';
+    public string $message = 'The string contains an illegal word: {{ string }}.';
 }

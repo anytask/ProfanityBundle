@@ -2,54 +2,60 @@
 
 namespace Vangrg\ProfanityBundle\Command;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Vangrg\ProfanityBundle\Entity\Profanity;
+use Vangrg\ProfanityBundle\Storage\ProfanitiesStorageInterface;
 
 /**
  * Class ProfanitiesPopulateCommand.
  */
 class ProfanitiesPopulateCommand extends Command
 {
-    /** @var ContainerInterface */
-    private $container;
+    private ManagerRegistry $doctrine;
+    private ProfanitiesStorageInterface $profanityStorage;
 
-    public function __construct(ContainerInterface $container)
+    // Constructor injection
+    public function __construct(ManagerRegistry $doctrine, ProfanitiesStorageInterface $profanityStorage)
     {
         parent::__construct();
 
-        $this->container = $container;
+        $this->doctrine = $doctrine;
+        $this->profanityStorage = $profanityStorage;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('vangrg:profanities:populate')
             ->setDescription('Load profanities into database.')
-            ->addOption('connection',
+            ->addOption(
+                'connection',
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'The connection to use for this command. If empty then use default doctrine connection.'
-            )
-        ;
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $doctrine = $this->container->get('doctrine');
-
         $connectionName = $input->getOption('connection');
-        $em = (empty($connectionName) === true)
-            ? $doctrine->getManagerForClass(Profanity::class)
-            : $doctrine->getManager($connectionName);
 
-        $profanities = $this->container->get('vangrg_profanity.storage.default')->getProfanities();
+        // Retrieve the appropriate Doctrine entity manager
+        $em = (empty($connectionName))
+            ? $this->doctrine->getManagerForClass(Profanity::class)
+            : $this->doctrine->getManager($connectionName);
 
+        // Retrieve profanities from storage
+        $profanities = $this->profanityStorage->getProfanities();
+
+        // Retrieve existing profanities from the database
         $existedWords = $em->getRepository(Profanity::class)->getProfanitiesArray();
 
+        // Filter out already existing words
         $profanities = array_diff($profanities, $existedWords);
 
         $i = 0;
@@ -59,6 +65,7 @@ class ProfanitiesPopulateCommand extends Command
 
             $em->persist($profanity);
 
+            // Flush and clear every 100 iterations to optimize memory
             if (($i % 100) === 0) {
                 $em->flush();
                 $em->clear();

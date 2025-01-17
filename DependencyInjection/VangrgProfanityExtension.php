@@ -19,15 +19,19 @@ class VangrgProfanityExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
+        // Create a Configuration object to process the configurations
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        // Set the alias for the storage service
         $container->setAlias('vangrg_profanity.storage', $config['storage']);
 
+        // Set parameters for profanities configuration
         $container->setParameter('vangrg_profanity.allow_bound_by_words', $config['allow_bound_by_words']);
         $container->setParameter('vangrg_profanity.source.file_name', $config['profanities_source']['file_name']);
         $container->setParameter('vangrg_profanity.source.format', $config['profanities_source']['format']);
 
+        // Load the services configuration from the services.yml file
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }

@@ -10,7 +10,7 @@ interface ProfanitiesStorageInterface
      *
      * @return array
      */
-    public function getProfanities();
+    public function getProfanities(): array;
 
     /**
      * Set a list of bad words.
@@ -24,5 +24,5 @@ interface ProfanitiesStorageInterface
      *
      * @return bool
      */
-    public function checkIfDataHasChanged();
+    public function checkIfDataHasChanged(): bool;
 }

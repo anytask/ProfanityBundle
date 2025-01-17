@@ -13,12 +13,12 @@ class ProfanitiesStorageDefault implements ProfanitiesStorageInterface
     /**
      * @var array
      */
-    private $profanities = [];
+    private array $profanities = [];
 
     /**
      * @var bool
      */
-    private $profanitiesIsChanged = false;
+    private bool $profanitiesIsChanged = false;
 
     /**
      * ProfanitiesStorageDefault constructor.
@@ -26,7 +26,7 @@ class ProfanitiesStorageDefault implements ProfanitiesStorageInterface
      * @param string $fileName
      * @param string $sourceFormat
      */
-    public function __construct($fileName, $sourceFormat)
+    public function __construct(string $fileName, string $sourceFormat)
     {
         $this->profanities = $this->loadProfanitiesFromFile($fileName, $sourceFormat);
     }
@@ -36,7 +36,7 @@ class ProfanitiesStorageDefault implements ProfanitiesStorageInterface
      * 
      * @return array
      */
-    public function getProfanities()
+    public function getProfanities(): array
     {
         $this->profanitiesIsChanged = false;
         return $this->profanities;
@@ -47,7 +47,7 @@ class ProfanitiesStorageDefault implements ProfanitiesStorageInterface
      *
      * @param array $profanities
      */
-    public function setProfanities(array $profanities)
+    public function setProfanities(array $profanities): void
     {
         $this->profanities = $profanities;
         $this->profanitiesIsChanged = true;
@@ -58,7 +58,7 @@ class ProfanitiesStorageDefault implements ProfanitiesStorageInterface
      *
      * @return bool
      */
-    public function checkIfDataHasChanged()
+    public function checkIfDataHasChanged(): bool
     {
         return $this->profanitiesIsChanged;
     }
@@ -68,7 +68,7 @@ class ProfanitiesStorageDefault implements ProfanitiesStorageInterface
      *
      * @return array
      */
-    protected function loadProfanitiesFromFile($sourceFileName, $sourceFormat)
+    protected function loadProfanitiesFromFile($sourceFileName, $sourceFormat): array
     {
         switch ($sourceFormat) {
             case 'yaml':
@@ -76,16 +76,16 @@ class ProfanitiesStorageDefault implements ProfanitiesStorageInterface
                 $result = $result['profanities'];
                 break;
             case 'xml':
-                $xml=simplexml_load_file($sourceFileName);
+                $xml= simplexml_load_string(file_get_contents($sourceFileName));
                 $result = (array)$xml->word;
                 break;
             case 'json':
                 $str = file_get_contents($sourceFileName);
-                $json = json_decode($str, true);
+                $json = json_decode($str, true, 512, JSON_THROW_ON_ERROR);
                 $result = $json['profanities'];
                 break;
             default:
-                throw new \InvalidArgumentException(sprintf('Not supported source format %s'), $sourceFormat);
+                throw new \InvalidArgumentException(sprintf('Not supported source format %s', $sourceFormat));
         }
 
         return $result;

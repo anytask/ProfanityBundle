@@ -9,7 +9,7 @@ use Doctrine\ORM\EntityRepository;
  */
 class ProfanityRepository extends EntityRepository
 {
-    public function getProfanitiesArray()
+    public function getProfanitiesArray(): array
     {
         $result = $this->createQueryBuilder('p')->select('p.word')->getQuery()->getResult();
 
