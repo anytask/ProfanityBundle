@@ -37,7 +37,7 @@ class ProfanitiesPopulateCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $doctrine = $this->container->get('doctrine');
 
@@ -69,5 +69,7 @@ class ProfanitiesPopulateCommand extends Command
         $em->flush();
 
         $output->writeln(sprintf('Populated %d words', $i));
+
+        return Command::SUCCESS;
     }
 }
